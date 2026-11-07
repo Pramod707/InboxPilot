@@ -13,6 +13,7 @@ def contains_action_promise(reply: str) -> bool:
     """Detect commitments that must be handled by a human."""
 
     patterns = [
+        # Replacement, refund, shipping and processing commitments
         r"\bwe\s+(can|will|shall|'ll)\s+"
         r"(send|ship|replace|refund|dispatch|issue|process|arrange)\b",
         r"\b(we|i)\s+(will|can|'ll)\s+"
@@ -26,6 +27,23 @@ def contains_action_promise(reply: str) -> bool:
         r"(replacement|refund|shipment)\s+"
         r"(is|has been|will be)\s+"
         r"(being arranged|arranged|processed|shipped|dispatched)\b",
+        # Colleague or team follow-up commitments
+        r"\b(a|our|my)\s+"
+        r"(colleague|team|agent|representative|specialist)\s+"
+        r"will\s+"
+        r"(follow up|get back|contact|call|email|respond|reply)\b",
+        # Direct customer-contact commitments
+        r"\b(we|i|our team)\s+"
+        r"(will|shall|'ll)\s+"
+        r"(follow up|get back to you|contact you|call you|email you|respond|reply)\b",
+        # Time-bound commitments
+        r"\b(within|by)\s+"
+        r"(one|two|three|four|five|\d+)\s+"
+        r"(business\s+)?(day|hour)s?\b",
+        # Requests for information that imply a future business action
+        r"\b(to\s+)?(send|ship|replace|refund|dispatch|issue|process|arrange)\s+"
+        r"(you\s+)?(a\s+|the\s+|your\s+)?"
+        r"(replacement|refund|shipment|refund payment)\b",
     ]
 
     return any(re.search(pattern, reply, re.IGNORECASE) for pattern in patterns)
