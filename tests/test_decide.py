@@ -11,6 +11,7 @@ decide_module = importlib.import_module("app.ai.decide")
 # Test data helpers
 # --------------------------------------------------
 
+
 def make_classification(
     needs_human: bool = False,
 ) -> Classification:
@@ -20,8 +21,7 @@ def make_classification(
         needs_human=needs_human,
         reason="Customer reported a damaged shelving panel.",
         acknowledgement=(
-            "Thank you for reaching out. "
-            "A colleague will review your enquiry."
+            "Thank you for reaching out. A colleague will review your enquiry."
         ),
     )
 
@@ -66,6 +66,7 @@ def mock_pipeline(monkeypatch, answer):
 # 1. Action-promise detection
 # --------------------------------------------------
 
+
 @pytest.mark.parametrize(
     "reply",
     [
@@ -101,6 +102,7 @@ def test_allows_ordinary_customer_service_language(reply):
 # 2. Attachment escalation
 # --------------------------------------------------
 
+
 def test_escalates_when_email_has_attachments(monkeypatch):
     classification = make_classification()
 
@@ -132,6 +134,7 @@ def test_escalates_when_email_has_attachments(monkeypatch):
 # 3. Human escalation rules
 # --------------------------------------------------
 
+
 def test_escalates_when_classifier_requires_human(monkeypatch):
     classification = make_classification(needs_human=True)
 
@@ -160,6 +163,7 @@ def test_escalates_when_classifier_requires_human(monkeypatch):
 # 4. Agent escalation
 # --------------------------------------------------
 
+
 def test_escalates_when_agent_requests_escalation(monkeypatch):
     mock_pipeline(
         monkeypatch,
@@ -174,6 +178,7 @@ def test_escalates_when_agent_requests_escalation(monkeypatch):
 # --------------------------------------------------
 # 5. Missing knowledge-base information
 # --------------------------------------------------
+
 
 def test_escalates_when_information_is_insufficient(monkeypatch):
     mock_pipeline(
@@ -191,6 +196,7 @@ def test_escalates_when_information_is_insufficient(monkeypatch):
 # 6. Model-detected action promises
 # --------------------------------------------------
 
+
 def test_escalates_when_agent_flags_action_promise(monkeypatch):
     mock_pipeline(
         monkeypatch,
@@ -206,29 +212,25 @@ def test_escalates_when_agent_flags_action_promise(monkeypatch):
 # 7. Regex-detected action promises
 # --------------------------------------------------
 
+
 def test_escalates_when_reply_contains_action_promise(monkeypatch):
     mock_pipeline(
         monkeypatch,
-        make_answer(
-            reply=(
-                "A colleague will reply to you "
-                "within one business day."
-            )
-        ),
+        make_answer(reply=("A colleague will reply to you within one business day.")),
     )
 
     result = decide_module.decide("Customer email")
 
     assert result.action == "escalate"
     assert (
-        result.reason
-        == "The generated reply contains a prohibited action commitment."
+        result.reason == "The generated reply contains a prohibited action commitment."
     )
 
 
 # --------------------------------------------------
 # 8. Safe customer reply
 # --------------------------------------------------
+
 
 def test_allows_safe_customer_reply(monkeypatch):
     mock_pipeline(
